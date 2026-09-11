@@ -1,5 +1,7 @@
 # lugano-scout
 
+[![CI](https://github.com/ben-lang-eng/lugano-scout/actions/workflows/ci.yml/badge.svg)](https://github.com/ben-lang-eng/lugano-scout/actions/workflows/ci.yml)
+
 > Started from the Linux Foundation Agno lab (materials not redistributed); rebuilt from scratch using the [Agno docs](https://docs.agno.com).
 
 An AI accommodation-search agent for family visits to Ticino, Switzerland — built with Agno AgentOS, MCP tools, and a swappable model backend (Gemini as baseline, [Apertus](https://www.swiss-ai.org/apertus) as the Swiss open-model swap).
