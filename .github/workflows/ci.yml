@@ -1,0 +1,18 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Ruff lint
+        run: uvx ruff check .
+      - name: Ruff format check
+        run: uvx ruff format --check .
+  # A pytest job gets added once there is logic worth testing
+  # (first candidate: currency normalization) — see NOTES.md.
