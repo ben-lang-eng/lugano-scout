@@ -1,6 +1,7 @@
 import os
-from dotenv import load_dotenv
+
 from agno.models.google import Gemini
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -13,11 +14,15 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 MYSWITZERLAND_API_KEY = os.getenv("MYSWITZERLAND_API_KEY")
 
 if not GEMINI_API_KEY:
-    raise RuntimeError("GEMINI_API_KEY is missing — copy .env.example to"
-                       " .env and add your key")
+    raise RuntimeError(
+        "GEMINI_API_KEY is missing — copy .env.example to .env and add "
+        "your key."
+    )
 if not MYSWITZERLAND_API_KEY:
-    raise RuntimeError("MYSWITZERLAND_API_KEY is missing — copy .env.example to"
-                       " .env and add your key")
+    raise RuntimeError(
+        "MYSWITZERLAND_API_KEY is missing — copy .env.example to .env and "
+        "add your key"
+    )
 
 
 def get_model():
@@ -37,5 +42,7 @@ def get_model():
     if MODEL_PROVIDER == GOOGLE_GEMINI:
         return Gemini(id=GEMINI_MODEL_ID, api_key=GEMINI_API_KEY)
     else:
-        raise ValueError(f"Unsupported MODEL_PROVIDER:"
-                         f"{MODEL_PROVIDER!r} (supported: 'gemini')")
+        raise ValueError(
+            f"Unsupported MODEL_PROVIDER:{MODEL_PROVIDER!r}"
+            f"(supported: 'gemini')"
+        )
