@@ -13,7 +13,7 @@ An AI accommodation-search agent for family visits to Ticino, Switzerland — bu
 Booking a stay near family in Ticino means juggling dates, prices in CHF, and family constraints across listing sites. This project turns that into a natural-language query against an agent — and doubles as a testbed for two portability questions:
 
 1. **Model portability** — can the same agent run on Google Gemini and on Apertus, the Swiss open LLM, by changing configuration only?
-2. **Tool portability** — the listing source is a community MCP server (a scraper that breaks when the site changes); the tool layer is designed to be swappable.
+2. **Tool portability** — accommodation data comes from the official [Switzerland Tourism OpenData API](https://developer.myswitzerland.io/) (CC BY-SA 4.0), exposed to the agent through a purpose-built MCP server in this repo; the tool layer is designed to be swappable.
 
 ## Architecture
 
@@ -21,7 +21,7 @@ Booking a stay near family in Ticino means juggling dates, prices in CHF, and fa
 
 ```
 AgentOS (FastAPI) ⇄ Agent ⇄ Model (Gemini | Apertus, via config)
-                        ⇄ MCP tools (Airbnb search server via npx)
+                        ⇄ MCP server (this repo) ⇄ Switzerland Tourism OpenData API
 ```
 
 ## Setup

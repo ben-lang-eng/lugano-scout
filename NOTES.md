@@ -3,13 +3,21 @@
 Scope rule: main build is max ~3 evenings. Anything not needed for
 README-backed functionality lands here instead of in the code.
 
+## Decided (13 Sep 2026): data source = Switzerland Tourism OpenData API
+
+Replaces the community Airbnb MCP scraper. Reasons: official & permitted
+(free self-serve API key via developer.myswitzerland.io; data mostly
+CC BY-SA 4.0), stable, Swiss open data pairs with the Swiss open model.
+We write our OWN MCP server (`fastmcp`) exposing the API as tools —
+stronger portfolio piece than consuming a scraper, and it absorbs the old
+"fallback/mock MCP server" idea (no longer needed: our server is real).
+Trade-off (goes in README honestly): tourism/hotel data, not
+vacation-rental listings; price/availability likely more static.
+Candidates evaluated and rejected: discover.swiss (partner friction),
+OpenBooking (B2B only), Zürich Tourism (wrong region).
+
 ## V2 ideas (parked)
 
-- **Fallback/mock MCP server**: own small MCP server serving a local JSON
-  dataset of Ticino listings, so the architecture demo works even when the
-  community Airbnb scraper is broken. Also a good exercise in writing an MCP
-  server rather than only consuming one. (Strong candidate — promote to main
-  scope if the `@openbnb` server is dead at build time.)
 - Additional MCP servers (e.g. weather for the travel dates, SBB/transport).
 - Agent memory / session persistence (agno supports it; not needed for demo).
 - Automated comparison harness: same query set run against both models,
