@@ -57,12 +57,31 @@ comparison table from the transcripts. Baseline transcripts: Gemini
   results table generated instead of hand-collected.
 - Streamlit or simple HTMX front end instead of the AgentOS dashboard.
 
+## Apertus serving — researched 14 Sep 2026 (Phase-3 start)
+
+Chosen: **Public AI Inference Utility** (platform.publicai.co).
+- Base URL: `https://api.publicai.co/v1` (OpenAI-compatible chat completions)
+- Auth: `Authorization: Bearer <key>` PLUS a mandatory `User-Agent`
+  header (anti-bot; requests without it are rejected)
+- API key: free self-serve (Login -> Account -> API Keys -> Create)
+- Models: `swiss-ai/apertus-v1.5-8b` (262K ctx, $0.10/$0.20 per 1M tok),
+  `-8b-thinking`, `-70b` ($0.82/$2.92), `-70b-thinking`; legacy
+  `apertus-8b/70b-instruct` (65K). Pick v1.5-8b first; 70b as escalation.
+- Free tier: **100 requests/min** (vs Gemini free 5/min!) + starter
+  credits; token usage billed against wallet, a benchmark run on 8b
+  costs well under a cent.
+- Rejected alternatives: Swisscom Sovereign AI Platform (business
+  contract), Hugging Face router (extra indirection).
+
 ## Open decisions
 
-- Apertus serving provider + endpoint (research at Phase-3 start; field moves
-  fast — PublicAI was the known option as of Sep 2026).
 - Exact agno model class for OpenAI-compatible endpoints (check installed
-  version's docs, don't guess).
+  version's docs, don't guess) — candidate: `agno.models.openai` OpenAI-like
+  class with `base_url`; must also carry the custom User-Agent header.
+- Whether the PublicAI endpoint supports OpenAI-style tool calling for
+  Apertus — verify empirically with one agent run; if not, that finding
+  goes in the comparison table honestly (and try the -thinking variant
+  or 70b).
 - pytest introduction point: add tests + pytest job to CI once there is logic
   worth testing (currency normalization is the first candidate).
 
