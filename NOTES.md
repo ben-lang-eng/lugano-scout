@@ -29,6 +29,26 @@ comparison table from the transcripts. Baseline transcripts: Gemini
    October 2026, length of stay flexible, budget up to 300 CHF per
    night." — then 400, then 600, then 200.
 
+### Apertus observations (14 Sep 2026, PublicAI gateway)
+
+**v1.5-8b:** Tool-call FORMAT flawless (structured calls, correct
+schema, zero malformed output). First round stuffed dates/months into
+the full-text `query` param -> empty results -> gave up; fixed by an
+explicit parameter contract in the tool docstring ("never put dates
+here"), after which it searched broadly and correctly. Remaining gap:
+single-step agency — exactly one search call per run, never fetches
+offer details, therefore cannot amortise package prices and over-
+filters ("don't specify per-night pricing"). Missed the "Bike Offer -
+2 nights" (312/night) under a 400 CHF/night limit. Latency 17-204 s.
+
+**v1.5-8b-thinking:** Still single-step. Once produced a proper table
+with correct 312/night amortisation (but listed it under a 300 CHF
+limit); next run claimed "none of the offers are overnight stays"
+despite "2 nights" in an offer name. Latency 30-227 s. Better peaks,
+no better reliability.
+
+Both variants: honest, no fabricated offers, no hallucinated numbers.
+
 ### Gemini flash-lite baseline observations
 
 - Tool calling: reliable throughout (1-7 calls per run, correct
