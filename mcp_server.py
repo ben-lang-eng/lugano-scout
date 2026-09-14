@@ -32,7 +32,10 @@ def search_offers(
         latitude: Latitude of the search-area centre (WGS84).
         longitude: Longitude of the search-area centre (WGS84).
         radius_m: Search radius in metres around the centre.
-        query: Optional full-text filter passed to the API.
+        query: Optional full-text match against offer NAMES and DESCRIPTIONS
+               only. Never put dates, months or budgets here — the API cannot
+               filter by them. Omit (empty string) to search broadly; date
+               filtering is the caller's job using valid_from/valid_through.
 
     Returns:
         A compact list of offers, each with id, name, min_price_chf,

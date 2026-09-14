@@ -2,6 +2,7 @@ import os
 
 from agno.agent import Agent
 from agno.models.google import Gemini
+from agno.models.openai import OpenAILike
 from agno.os import AgentOS
 from agno.tools.mcp import MCPTools
 from dotenv import load_dotenv
@@ -9,13 +10,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GOOGLE_GEMINI = "gemini"
+SWISSAI_APERTUS = "apertus"
 GEMINI_3POINT5_FLASH_LITE = "gemini-3.5-flash-lite"
 LAT_LUGANO = 46.005
 LON_LUGANO = 8.953
 
 MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", GOOGLE_GEMINI)
+APERTUS_BASE_URL = os.getenv("APERTUS_BASE_URL")
 GEMINI_MODEL_ID = os.getenv("GEMINI_MODEL_ID", GEMINI_3POINT5_FLASH_LITE)
+APERTUS_MODEL_ID = os.getenv("APERTUS_MODEL_ID")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+APERTUS_API_KEY = os.getenv("APERTUS_API_KEY")
 MYSWITZERLAND_API_KEY = os.getenv("MYSWITZERLAND_API_KEY")
 SEARCH_LAT = os.getenv("SEARCH_LAT", LAT_LUGANO)
 SEARCH_LON = os.getenv("SEARCH_LON", LON_LUGANO)
@@ -30,7 +35,9 @@ default. If the user names a different place, use that place's coordinates
 instead.
 
 ## Workflow
-1. Search all available offers for the given location.
+1. Search all available offers for the given location. This is a broad search 
+   without query; dates and budget are filtered by YOU from the results, 
+   never via the query parameter.
 2. View results, keep only overnight stay offers, exclude experiences and 
     transfers.
 3. Only extract offer details for the shortlist.
@@ -58,16 +65,28 @@ honestly conveyed (and reasons why items were filtered out) rather than
 providing offers just for the sake of it.
 """
 
-if not GEMINI_API_KEY:
-    raise RuntimeError(
-        "GEMINI_API_KEY is missing — copy .env.example to .env and add "
-        "your key."
-    )
-if not MYSWITZERLAND_API_KEY:
-    raise RuntimeError(
-        "MYSWITZERLAND_API_KEY is missing — copy .env.example to .env and "
-        "add your key"
-    )
+
+def validate_config():
+    """Validates if the .env file provides a usable model provider, model id,
+    api key, base url. Check if the datasource api key is usable.
+
+    Raises a RuntimeError with the name of the missing .env item."""
+    required = {"MYSWITZERLAND_API_KEY": MYSWITZERLAND_API_KEY}
+    if MODEL_PROVIDER == GOOGLE_GEMINI:
+        required["GEMINI_API_KEY"] = GEMINI_API_KEY
+    elif MODEL_PROVIDER == SWISSAI_APERTUS:
+        required["APERTUS_API_KEY"] = APERTUS_API_KEY
+        required["APERTUS_BASE_URL"] = APERTUS_BASE_URL
+        required["APERTUS_MODEL_ID"] = APERTUS_MODEL_ID
+    for name, value in required.items():
+        if not value:
+            raise RuntimeError(
+                f"{name} is missing — copy .env.example."
+                f"Supported: {GOOGLE_GEMINI}, {SWISSAI_APERTUS}."
+            )
+
+
+validate_config()
 
 
 def get_model():
@@ -86,10 +105,17 @@ def get_model():
     """
     if MODEL_PROVIDER == GOOGLE_GEMINI:
         return Gemini(id=GEMINI_MODEL_ID, api_key=GEMINI_API_KEY)
+    elif MODEL_PROVIDER == SWISSAI_APERTUS:
+        return OpenAILike(
+            id=APERTUS_MODEL_ID,
+            api_key=APERTUS_API_KEY,
+            base_url=APERTUS_BASE_URL,
+            default_headers={"User-Agent": "lugano-scout/0.1"},
+        )
     else:
         raise ValueError(
             f"Unsupported MODEL_PROVIDER:{MODEL_PROVIDER!r} "
-            f"( supported: {GOOGLE_GEMINI})"
+            f"( supported: {GOOGLE_GEMINI}, {SWISSAI_APERTUS}.)"
         )
 
 
