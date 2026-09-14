@@ -16,6 +16,39 @@ vacation-rental listings; price/availability likely more static.
 Candidates evaluated and rejected: discover.swiss (partner friction),
 OpenBooking (B2B only), Zürich Tourism (wrong region).
 
+## Benchmark query set (frozen 14 Sep 2026)
+
+Run these VERBATIM against every model backend; fill the README
+comparison table from the transcripts. Baseline transcripts: Gemini
+`gemini-3.5-flash-lite`, agent commit 9267796.
+
+1. "Find me accommodation deals near Lugano for 01/10/2026 to
+   08/10/2026, budget up to 300 CHF per night."
+2. Same, budget up to 400 CHF per night.
+3. "Find me accommodation deals near Lugano within the month of
+   October 2026, length of stay flexible, budget up to 300 CHF per
+   night." — then 400, then 600, then 200.
+
+### Gemini flash-lite baseline observations
+
+- Tool calling: reliable throughout (1-7 calls per run, correct
+  search -> details chain, no malformed calls in ~10 runs).
+- Arithmetic slips: one run claimed the 999 CHF package exceeded a
+  2,100 CHF total budget; another showed only an over-budget package
+  at a 200 CHF/night limit while omitting two packages it had itself
+  amortised to ~167 and ~171 CHF/night one query earlier.
+- Run-to-run variance: identical 600 CHF/night query produced a
+  wrong/empty answer and, on retry, the best answer of the session
+  (durations fetched, per-night amortisation, link-quality caveat).
+- One hallucinated validity year (2025 instead of 2026).
+- Data boundary (README material): the OpenData API exposes curated
+  touristic offers only — the live hotel inventory with ratings and
+  availability on swisshotels.myswitzerland.com (Switzerland Travel
+  Centre booking engine) is a separate commercial system, not in the
+  open API. The agent is honest within that boundary. Proper live
+  inventory would need discover.swiss AccommoDataHub (partner access)
+  — parked as V2.
+
 ## V2 ideas (parked)
 
 - Additional MCP servers (e.g. weather for the travel dates, SBB/transport).
